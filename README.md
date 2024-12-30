@@ -48,6 +48,8 @@ python app.py
 - `student_codes.xlsx`: Output Excel file with matched names and codes
 - `recognized_text.txt`: Log file of recognized codes
 
+> **Note**: This project was generated with the assistance of AI (Cursor) to create a code reader application for processing student identification codes using OCR technology.
+
 ## License
 
 This project is licensed under the terms specified in the LICENSE file. 
