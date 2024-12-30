@@ -2,6 +2,8 @@
 
 A Python application that uses computer vision and OCR (Optical Character Recognition) to read and process specific code patterns from a camera feed. The application matches these codes with student names and exports the results to an Excel file.
 
+> **Note**: This project was generated with the assistance of AI (Cursor) to create a code reader application for processing student identification codes using OCR technology.
+
 ## Features
 
 - Real-time camera feed processing
@@ -47,8 +49,6 @@ python app.py
 - `students.txt`: Input file containing student names
 - `student_codes.xlsx`: Output Excel file with matched names and codes
 - `recognized_text.txt`: Log file of recognized codes
-
-> **Note**: This project was generated with the assistance of AI (Cursor) to create a code reader application for processing student identification codes using OCR technology.
 
 ## License
 
