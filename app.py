@@ -3,81 +3,81 @@ import pytesseract
 import re
 import pandas as pd
 
-# Öğrenci isimlerini dosyadan oku
+# Read student names from file
 with open('students.txt', 'r', encoding='utf-8') as file:
     names = [line.strip() for line in file.readlines()]
 
-# Kamerayı aç
+# Open camera
 cap = cv2.VideoCapture(0)
 
-# Kamera çözünürlüğünü düşür (640x480 önerilir)
+# Set camera resolution (640x480 recommended)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
-# Tanımak istediğin regex formatı: S-###-###-####
+# Regex pattern to recognize: S-###-###-####
 pattern = r'[A-Z]-\d{3}-\d{3}-\d{4}'
 
-# Daha önce okunan kodları saklamak için bir set
+# Set to store previously recognized codes
 recognized_codes = set()
 
-assignments = []  # Kod ve isim eşleştirmeleri
-current_index = 0  # İsimlerin indeksini takip et
+assignments = []  # Store code and name matches
+current_index = 0  # Track the index of names
 
 while True:
-    # Her döngüde yeni bir kare al
+    # Get a new frame in each loop
     ret, frame = cap.read()
 
-    # Eğer kare başarıyla alındıysa
+    # If frame was successfully captured
     if ret:
-        # OCR işlemi yap
+        # Perform OCR
         text = pytesseract.image_to_string(frame)
 
-        # Regex ile formata uyan metinleri bul
+        # Find texts matching the pattern using regex
         matches = re.findall(pattern, text)
 
-        # Eğer formata uyan metin bulunduysa
+        # If matching text is found
         for match in matches:
-            if match not in recognized_codes:  # Daha önce kaydedilmediyse
-                print("Tanımlanan metin:", match)
+            if match not in recognized_codes:  # If not previously recorded
+                print("Recognized text:", match)
 
-                # Metni dosyaya kaydet
+                # Save text to file
                 with open("recognized_text.txt", "a", encoding='utf-8') as file:
                     file.write(match + "\n")
 
-                # Tanınan kodu sete ekle
+                # Add recognized code to set
                 recognized_codes.add(match)
 
-                # İsim ile kodu eşleştir
-                if current_index < len(names):  # İsimler tükenmemişse
+                # Match name with code
+                if current_index < len(names):  # If names are not exhausted
                     assignments.append((names[current_index], match))
-                    current_index += 1  # İndeksi artır
+                    current_index += 1  # Increment index
 
-                # İstenilen sayıda kod okunduysa döngüden çık
+                # Exit loop if desired number of codes are read
                 if current_index >= len(names):
-                    print("Tüm kodlar okundu.")
+                    print("All codes have been read.")
                     break
 
-        # Kamera görüntüsünü ekranda göster
+        # Show camera feed on screen
         cv2.imshow('Camera Feed', frame)
 
-        # 'q' tuşuna basılınca döngüden çık
+        # Exit loop if 'q' is pressed
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
-    # Tüm kodlar okunduysa döngüyü kır
+    # Break loop if all codes are read
     if current_index >= len(names):
         break
 
-# Kamera ve pencereleri serbest bırak
+# Release camera and windows
 cap.release()
 cv2.destroyAllWindows()
 
-# Eğer eşleştirme yapıldıysa DataFrame oluştur
+# Create DataFrame if matches were made
 if assignments:
-    df = pd.DataFrame(assignments, columns=['İsim', 'Kod'])
+    df = pd.DataFrame(assignments, columns=['Name', 'Code'])
 
-    # Excel dosyasına kaydet
-    df.to_excel('ogrenci_kodlari.xlsx', index=False)
-    print("Excel dosyası oluşturuldu: ogrenci_kodlari.xlsx")
+    # Save to Excel file
+    df.to_excel('student_codes.xlsx', index=False)
+    print("Excel file created: student_codes.xlsx")
 else:
-    print("Hiçbir kod okunamadı, Excel dosyası oluşturulamadı.")
+    print("No codes were read, Excel file could not be created.")
